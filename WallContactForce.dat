@@ -1,0 +1,66 @@
+define WallContactForce
+;
+       RotatingTime=time-Time2
+       RotatingAngle=RPM*180/pi*RotatingTime
+;      jj = out('RelativeTime2 = ' + '\t' + string(RelativeTime2))
+;      jj = out('RelativeTime3 = ' + '\t' + string(RelativeTime3))
+;      jj = out('RotatingTime = ' + '\t' + string(RotatingTime))
+;      jj = out('RotatingAngle = ' + '\t' + string(RotatingAngle))
+;
+       loop kk (1, AxialNumber)
+            loop ii (1, SegmentNumber)
+                 loop jj (1, 4)
+                      BWForce(kk,ii,jj)= 0.0
+                      BWPressure(kk,ii,jj)= 0.0
+                 end_loop
+            end_loop
+       end_loop
+;
+       cp= contact_head
+       loop while cp # null
+	    EntityB= c_ball2(cp)
+            if pointer_type(EntityB)=101 then
+               WallID= w_id(EntityB)
+               if WallID >= StartWall then
+                  Idex=int((WallID-StartWall)/(2*SegmentNumber))
+                  Idex1=Idex+1
+                  StartWall1=StartWall+Idex*2*SegmentNumber
+                  Index=int((WallID-StartWall1)/2)
+                  Index1=Index+1
+                  theta=(OAngle(Index1)+RotatingAngle)*pi/180 
+                  ContactForce(1)=c_nforce(cp)
+                  ContactForce(2)=c_xsforce(cp)*cos(theta)+c_ysforce(cp)*sin(theta)
+                  ContactForce(3)=c_zsforce(cp)
+                  ContactForce(4)=c_xsforce(cp)*sin(theta)-c_ysforce(cp)*cos(theta)
+                  loop ii (1, 4)
+                       BWForce(Idex1,Index1,ii)= BWForce(Idex1,Index1,ii)+ContactForce(ii)
+                  end_loop
+               end_if    
+            end_if
+	    cp= c_next(cp)
+       end_loop
+;
+       loop kk (1, AxialNumber)
+            loop ii (1, SegmentNumber)
+                 loop jj (1, 4)
+                      BWPressure(kk,ii,jj)= BWForce(kk,ii,jj)/SegmentArea
+                 end_loop
+            end_loop
+       end_loop
+;
+       BWPressureData(1) = ( 'SegmentNo.' + '\t' + 'X-direction' + '\t' + 'Y-direction' + '\t' + 'Z-direction' + '\t' + 'normal-direction')
+       iii=1
+       loop kk (1, AxialNumber)
+            loop ii (1, SegmentNumber)
+                 iii= iii+1
+                 BWPressureData(iii)=(string(kk) + '\t' + string(ii) + '\t' + string(BWPressure(kk,ii,1)) + '\t' + string(BWPressure(kk,ii,2)) + '\t' + string(BWPressure(kk,ii,3)) + '\t' + string(BWPressure(kk,ii,4))) 
+            end_loop
+       end_loop
+       DataNumber=AxialNumber*SegmentNumber+1
+;
+       BWPressureFile= 'BaseWallPressure_'+string(SnapN3)+'.fio'
+       status=open(BWPressureFile,1,1)
+       status=write(BWPressureData, DataNumber)
+       status=close
+;
+end

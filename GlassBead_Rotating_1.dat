@@ -1,0 +1,111 @@
+new
+restore OutputFiles\GlassBead_Filling_1.sav
+;
+set echo on
+set logfile Logfile_Rotating_1
+set log on 
+set plot bmp
+;
+set fishcall 0 remove Snapshot1 
+;
+define ModelParameter_2
+;Rotation parameter
+       RPM= -10.0*2*pi/60.0
+       RR2=DrumRadius-BeadRadius
+       RotatingVel=RPM*RR2
+       SNumber=numid
+;Snapshot information
+       Time2=time
+       SnapN2= 0
+       SnapInterval2= 0.01
+;Save file information 1
+       SaveT1=time
+       SaveN1= 0
+       SaveInterval1= 1.0/10.0*60
+end
+@ModelParameter_2  ;°õ¦æ    
+print Time2
+;
+define CountParticlesInDrum
+       HalfDepth=Depth/2.0
+       X0= 0.0
+       Y0= 0.0
+       Z0= Depth/2.0
+       ParticleNumber= 0
+       bp=ball_head
+       loop while bp # null
+            if abs(b_z(bp)-Z0) < HalfDepth then
+               PDistance=sqrt((b_x(bp)-X0)^2+(b_y(bp)-Y0)^2)
+               if PDistance < DrumRadius then
+                  ParticleNumber = ParticleNumber + 1
+               end_if  
+            end_if        
+            bp=b_next(bp)
+       end_loop
+       jj = out('The number of particles = ' + '\t' + string(ParticleNumber))	
+end
+@CountParticlesInDrum
+;
+;Wall rotation
+wall property x 0.0 y 0.0 z 0.0
+call WallRotation.dat
+set fishcall 0 @WallRotation
+print walls velocity
+print walls spin
+pause
+;
+;PFC3D v4.0
+;clump property damping 0.07 
+;print clump damping
+;
+plot show 1
+plot show 2
+plot show 3
+plot show 4       
+plot show 5        
+plot show 6      
+plot show 7
+pause
+;
+define Snapshot2
+       SnapTime= SnapN2*SnapInterval2
+       RelativeTime2= time-Time2      
+       if RelativeTime2 > SnapTime then
+          View1= 'Model1_'+string(SnapN2)+'.bmp'
+          View2= 'Model2_'+string(SnapN2)+'.bmp'
+          View3= 'Model3_'+string(SnapN2)+'.bmp'
+          command
+             plot hardcopy 1 file View1
+             plot hardcopy 2 file View2
+             plot hardcopy 3 file View3
+          end_command
+          SnapN2= SnapN2+1
+       end_if
+end
+set fishcall 0 @Snapshot2
+;
+define SaveFile1     
+       SaveTime= SaveN1*SaveInterval1
+       RelativeTime3= time-SaveT1 
+       if RelativeTime3 > SaveTime then
+          HFName1= 'Results_Rotating_Time_MCF_MUF_KE_FE_1_'+string(SaveN1)+'.his'
+          HFName2= 'Results_Rotating_Time_RelativeTime2_1_'+string(SaveN1)+'.his'
+          SFName= 'GlassBead_Rotating_1_'+string(SaveN1)+'.sav'
+          command
+             history write 1 2 3 4 5 file HFName1
+             history write 1 6 file HFName2
+             save SFName
+          end_command
+          SaveN1= SaveN1+1
+       end_if
+end
+set fishcall 0 @SaveFile1
+;
+history id 6 RelativeTime2
+;
+cycle 1100000
+history write 1 2 3 4 5 file Results_Rotating_Time_MCF_MUF_KE_FE_1.HIS
+history write 1 6 file Results_Rotating_Time_RelativeTime2_1.HIS
+save OutputFiles\GlassBead_Rotating_1.sav
+;
+return

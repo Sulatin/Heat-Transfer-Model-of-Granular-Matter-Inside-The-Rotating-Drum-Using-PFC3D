@@ -1,0 +1,181 @@
+new
+restore OutputFiles\GlassBead_Rotating_1_1.sav
+;
+set echo on
+set logfile Logfile_Rotating_2
+set log on 
+set plot bmp
+;
+set fishcall 0 remove Snapshot2
+;
+define ModelParameter_3
+;Wall contact force information
+       array BWPressureData(1281) 
+       array ContactForce(4)
+       array BWForce(1,64,4)
+       array BWPressure(1,64,4)
+       array OAngle(64)
+       AxialNumber= 1   
+       SegmentArea=2*DrumRadius*sin(pi/SegmentNumber)*Depth/AxialNumber
+       StartWall= 257    
+;Wall angle information
+       OAngle(1)=-81.5625
+       AngleIncrement=360.0/SegmentNumber
+       loop jj (1, 63)
+            OAngle(jj+1)=OAngle(jj)+AngleIncrement
+       end_loop
+;Particle state information
+       array PData(1)
+       array BallX(2)
+       array BallY(2)
+;Increment number calculation
+       HZ=11.3/60.0
+       PPS=400
+       NumberIncrement= 1
+; Wall Thermal property ; steel wall
+;      WPower=140 ;Wall Power
+       TWallInit=300
+;      WConduct=210
+;      WLength=Depth
+       TWall=800
+       TWResist=1000
+;      TPL=0.002
+ ;Ball Thermal Property
+       TBInit=300 ;Temperature Initial Ball
+       TBSheat=800.0   ; Thermal ball specific heat
+       TBExp=1.5e-06   ; Thermal ball expansion
+       TPResist=1000
+;      TBCond=2.0      ; Thermal conductivity
+;Snapshot information
+       Time3=time
+       Time4=th_time
+       SnapN3= 0
+       SnapInterval3= 0.01
+       PickUpID=0
+;Output information
+       jj = out('The time ready to pick up images = ' + '\t' + string(Time3))		
+end
+@ModelParameter_3
+;
+@CountParticlesInDrum
+pause
+;
+;
+; Set thermal settings
+;
+config thermal
+set therm on mech on
+Thermal set safety_fac 0.20
+Thermal set substep 1
+Therm pipe active_check on
+;
+;
+therm prop exp=TBExp
+therm prop sheat=TBSheat
+therm prop resistance=TPResist
+;
+define ContactThermalBall
+       cp = contact_head
+       loop while cp # null
+	    EntityB= c_ball1(cp)
+	    if pointer_type(EntityB)=100 then
+               c_thres(cp)=TPResist
+	    end_if
+	    cp = c_next(cp)
+       end_loop
+end
+set fishcall 0 @ContactThermalBall
+;
+define ContactThermal
+       cp = contact_head
+       loop while cp # null
+	    EntityB= c_ball2(cp)
+	    if pointer_type(EntityB)=102 then
+               c_thres(cp)=TWResist
+	    end_if
+	    cp = c_next(cp)
+       end_loop
+end
+set fishcall 0 @ContactThermal
+,
+; Set thermal boundary conditions
+;
+wall prop temperature TWall range id= 260,263 
+wall prop temperature TWall range id= 268,271 
+wall prop temperature TWall range id= 276,279 
+wall prop temperature TWall range id= 284,287 
+wall prop temperature TWall range id= 292,295 
+wall prop temperature TWall range id= 300,303 
+wall prop temperature TWall range id= 308,311 
+wall prop temperature TWall range id= 316,319 
+wall prop temperature TWallInit range id= 257,259 
+wall prop temperature TWallInit range id= 264,267 
+wall prop temperature TWallInit range id= 272,275 
+wall prop temperature TWallInit range id= 280,283 
+wall prop temperature TWallInit range id= 288,291 
+wall prop temperature TWallInit range id= 296,299
+wall prop temperature TWallInit range id= 304,307 
+wall prop temperature TWallInit range id= 312,315 
+wall prop temperature TWallInit range id= 320  
+;
+;check wall temperature
+print wall prop
+therm print reservoir temp
+;
+plot show 1
+plot show 2
+plot show 3
+plot show 4      
+plot show 5       
+plot show 6      
+plot show 7
+;
+call ParticleStateInformation.dat
+;ParticleStateInformation
+;
+call WallContactForce.dat
+;WallContactForce
+;
+define Snapshot3 
+       SnapTime= SnapN3*SnapInterval3
+       PickUpNumber= PickUpID*NumberIncrement
+       RelativeTime3= time-Time3
+       RelativeTime4= th_time-Time4
+       if RelativeTime3 > SnapTime then
+         if RelativeTime4 > SnapTime then
+          if SnapN3 = PickUpNumber then
+;
+             View1= 'Record1_'+string(SnapN3)+'.bmp'
+             View2= 'Record2_'+string(SnapN3)+'.bmp'
+             View3= 'Record3_'+string(SnapN3)+'.bmp'
+             command
+                plot hardcopy 1 file View1
+                plot hardcopy 2 file View2
+                plot hardcopy 3 file View3
+             end_command
+             PickUpID=PickUpID+1
+;             
+          end_if
+          end_if
+          @ParticleStateInformation
+          @WallContactForce
+          SnapN3= SnapN3+1
+       end_if
+;
+;      jj = out('SnapN3=' + '\t' + string(SnapN3) + '\t' + '\t' +'PickUpID=' + '\t' + string(PickUpID))
+;      
+end
+set fishcall 0 @Snapshot3
+;
+history id 7 RelativeTime3
+history id 8 RelativeTime4
+THERMAL init temp add TBInit
+THERMAL print reservoir temp
+pause
+;
+cycle 5500000
+history write 1 2 3 4 5 file Results_Rotating_Time_MCF_MUF_KE_FE_2.HIS
+history write 1 6 8 7 file Results_Rotating_Time_RelativeTime2_Time_RelativeTime4_RelativeTime3_2.HIS
+save OutputFiles\GlassBead_Rotating_2.sav
+;
+return

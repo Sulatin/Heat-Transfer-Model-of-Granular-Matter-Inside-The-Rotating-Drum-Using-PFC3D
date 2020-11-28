@@ -1,0 +1,137 @@
+; Particle adhere in wall
+define ParticleGluedWall
+; initial parameters balls adhere in Wall
+   NumAdhereBall=8
+   NumSegmentDegree=(2*pi)/NumAdhereBall
+   SegmentLength=(2*pi*DrumRadius)/SegmentNumber
+   Theta0=0.0
+   PSpacing=BeadDiameter
+   RadiusWallAdhere=DrumRadius-BeadRadius
+   BallDegree=(2*pi/64)*(PSpacing/SegmentLength)
+   numid=10000
+   X00=RadiusWallAdhere*Cos(Theta0+(1.5*2.03*pi/64))
+   Y00=RadiusWallAdhere*Sin(Theta0+(1.5*2.03*pi/64))
+   X01=RadiusWallAdhere*Cos(Theta0+(2.5*2.03*pi/64))
+   Y01=RadiusWallAdhere*Sin(Theta0+(2.5*2.03*pi/64))
+   X02=RadiusWallAdhere*Cos(Theta0+(3.5*2.03*pi/64))
+   Y02=RadiusWallAdhere*Sin(Theta0+(3.5*2.03*pi/64))
+   ;
+   Z0=BeadRadius
+   Z1=Z0+BeadDiameter
+
+   ;
+   X10=RadiusWallAdhere*Cos(1*NumSegmentDegree+(1.5*2.03*pi/64))
+   Y10=RadiusWallAdhere*Sin(1*NumSegmentDegree+(1.5*2.03*pi/64))
+   X11=RadiusWallAdhere*Cos(1*NumSegmentDegree+(2.5*2.03*pi/64))
+   Y11=RadiusWallAdhere*Sin(1*NumSegmentDegree+(2.5*2.03*pi/64))
+   X12=RadiusWallAdhere*Cos(1*NumSegmentDegree+(3.5*2.03*pi/64))
+   Y12=RadiusWallAdhere*Sin(1*NumSegmentDegree+(3.5*2.03*pi/64))
+   ;
+   X20=RadiusWallAdhere*Cos(2*NumSegmentDegree+(1.5*2.03*pi/64))
+   Y20=RadiusWallAdhere*Sin(2*NumSegmentDegree+(1.5*2.03*pi/64))
+   X21=RadiusWallAdhere*Cos(2*NumSegmentDegree+(2.5*2.03*pi/64))
+   Y21=RadiusWallAdhere*Sin(2*NumSegmentDegree+(2.5*2.03*pi/64))
+   X22=RadiusWallAdhere*Cos(2*NumSegmentDegree+(3.5*2.03*pi/64))
+   Y22=RadiusWallAdhere*Sin(2*NumSegmentDegree+(3.5*2.03*pi/64))
+   ;
+   X30=RadiusWallAdhere*Cos(3*NumSegmentDegree+(1.5*2.03*pi/64))
+   Y30=RadiusWallAdhere*Sin(3*NumSegmentDegree+(1.5*2.03*pi/64))
+   X31=RadiusWallAdhere*Cos(3*NumSegmentDegree+(2.5*2.03*pi/64))
+   Y31=RadiusWallAdhere*Sin(3*NumSegmentDegree+(2.5*2.03*pi/64))
+   X32=RadiusWallAdhere*Cos(3*NumSegmentDegree+(3.5*2.03*pi/64))
+   Y32=RadiusWallAdhere*Sin(3*NumSegmentDegree+(3.5*2.03*pi/64))
+   ;
+   X40=RadiusWallAdhere*Cos(4*NumSegmentDegree+(1.5*2.03*pi/64))
+   Y40=RadiusWallAdhere*Sin(4*NumSegmentDegree+(1.5*2.03*pi/64))
+   X41=RadiusWallAdhere*Cos(4*NumSegmentDegree+(2.5*2.03*pi/64))
+   Y41=RadiusWallAdhere*Sin(4*NumSegmentDegree+(2.5*2.03*pi/64))
+   X42=RadiusWallAdhere*Cos(4*NumSegmentDegree+(3.5*2.03*pi/64))
+   Y42=RadiusWallAdhere*Sin(4*NumSegmentDegree+(3.5*2.03*pi/64))
+   ;
+   X50=RadiusWallAdhere*Cos(5*NumSegmentDegree+(1.5*2.03*pi/64))
+   Y50=RadiusWallAdhere*Sin(5*NumSegmentDegree+(1.5*2.03*pi/64))
+   X51=RadiusWallAdhere*Cos(5*NumSegmentDegree+(2.5*2.03*pi/64))
+   Y51=RadiusWallAdhere*Sin(5*NumSegmentDegree+(2.5*2.03*pi/64))
+   X52=RadiusWallAdhere*Cos(5*NumSegmentDegree+(3.5*2.03*pi/64))
+   Y52=RadiusWallAdhere*Sin(5*NumSegmentDegree+(3.5*2.03*pi/64))
+   ;
+   X60=RadiusWallAdhere*Cos(6*NumSegmentDegree+(1.5*2.03*pi/64))
+   Y60=RadiusWallAdhere*Sin(6*NumSegmentDegree+(1.5*2.03*pi/64))
+   X61=RadiusWallAdhere*Cos(6*NumSegmentDegree+(2.5*2.03*pi/64))
+   Y61=RadiusWallAdhere*Sin(6*NumSegmentDegree+(2.5*2.03*pi/64))
+   X62=RadiusWallAdhere*Cos(6*NumSegmentDegree+(3.5*2.03*pi/64))
+   Y62=RadiusWallAdhere*Sin(6*NumSegmentDegree+(3.5*2.03*pi/64))
+   ;
+   X70=RadiusWallAdhere*Cos(7*NumSegmentDegree+(1.5*2.03*pi/64))
+   Y70=RadiusWallAdhere*Sin(7*NumSegmentDegree+(1.5*2.03*pi/64))
+   X71=RadiusWallAdhere*Cos(7*NumSegmentDegree+(2.5*2.03*pi/64))
+   Y71=RadiusWallAdhere*Sin(7*NumSegmentDegree+(2.5*2.03*pi/64))
+   X72=RadiusWallAdhere*Cos(7*NumSegmentDegree+(3.5*2.03*pi/64))
+   Y72=RadiusWallAdhere*Sin(7*NumSegmentDegree+(3.5*2.03*pi/64))
+   ;
+   command
+      ball id=numid x=X00 y=Y00 z=Z0 rad=BeadRadius hertz
+      ball id=10001 x=X01 y=Y01 z=Z0 rad=BeadRadius hertz
+      ball id=10002 x=X02 y=Y02 z=Z0 rad=BeadRadius hertz
+      ball id=10003 x=X00 y=Y00 z=Z1 rad=BeadRadius hertz
+      ball id=10004 x=X01 y=Y01 z=Z1 rad=BeadRadius hertz
+      ball id=10005 x=X02 y=Y02 z=Z1 rad=BeadRadius hertz
+;
+      ball id=10006 x=X10 y=Y10 z=Z0 rad=BeadRadius hertz
+      ball id=10007 x=X11 y=Y11 z=Z0 rad=BeadRadius hertz
+      ball id=10008 x=X12 y=Y12 z=Z0 rad=BeadRadius hertz
+      ball id=10009 x=X10 y=Y10 z=Z1 rad=BeadRadius hertz
+      ball id=10010 x=X11 y=Y11 z=Z1 rad=BeadRadius hertz
+      ball id=10011 x=X12 y=Y12 z=Z1 rad=BeadRadius hertz
+;
+      ball id=10012 x=X20 y=Y20 z=Z0 rad=BeadRadius hertz
+      ball id=10013 x=X21 y=Y21 z=Z0 rad=BeadRadius hertz
+      ball id=10014 x=X22 y=Y22 z=Z0 rad=BeadRadius hertz
+      ball id=10015 x=X20 y=Y20 z=Z1 rad=BeadRadius hertz
+      ball id=10016 x=X21 y=Y21 z=Z1 rad=BeadRadius hertz
+      ball id=10017 x=X22 y=Y22 z=Z1 rad=BeadRadius hertz
+;
+      ball id=10018 x=X30 y=Y30 z=Z0 rad=BeadRadius hertz
+      ball id=10019 x=X31 y=Y31 z=Z0 rad=BeadRadius hertz
+      ball id=10020 x=X32 y=Y32 z=Z0 rad=BeadRadius hertz
+      ball id=10021 x=X30 y=Y30 z=Z1 rad=BeadRadius hertz
+      ball id=10022 x=X31 y=Y31 z=Z1 rad=BeadRadius hertz
+      ball id=10023 x=X32 y=Y32 z=Z1 rad=BeadRadius hertz
+;
+      ball id=10024 x=X40 y=Y40 z=Z0 rad=BeadRadius hertz
+      ball id=10025 x=X41 y=Y41 z=Z0 rad=BeadRadius hertz
+      ball id=10026 x=X42 y=Y42 z=Z0 rad=BeadRadius hertz
+      ball id=10027 x=X40 y=Y40 z=Z1 rad=BeadRadius hertz
+      ball id=10028 x=X41 y=Y41 z=Z1 rad=BeadRadius hertz
+      ball id=10029 x=X42 y=Y42 z=Z1 rad=BeadRadius hertz
+;
+      ball id=10030 x=X50 y=Y50 z=Z0 rad=BeadRadius hertz
+      ball id=10031 x=X51 y=Y51 z=Z0 rad=BeadRadius hertz
+      ball id=10032 x=X52 y=Y52 z=Z0 rad=BeadRadius hertz
+      ball id=10033 x=X50 y=Y50 z=Z1 rad=BeadRadius hertz
+      ball id=10034 x=X51 y=Y51 z=Z1 rad=BeadRadius hertz
+      ball id=10035 x=X52 y=Y52 z=Z1 rad=BeadRadius hertz
+;
+      ball id=10036 x=X60 y=Y60 z=Z0 rad=BeadRadius hertz
+      ball id=10037 x=X61 y=Y61 z=Z0 rad=BeadRadius hertz
+      ball id=10038 x=X62 y=Y62 z=Z0 rad=BeadRadius hertz
+      ball id=10039 x=X60 y=Y60 z=Z1 rad=BeadRadius hertz
+      ball id=10040 x=X61 y=Y61 z=Z1 rad=BeadRadius hertz
+      ball id=10041 x=X62 y=Y62 z=Z1 rad=BeadRadius hertz
+;
+      ball id=10042 x=X70 y=Y70 z=Z0 rad=BeadRadius hertz
+      ball id=10043 x=X71 y=Y71 z=Z0 rad=BeadRadius hertz
+      ball id=10044 x=X72 y=Y72 z=Z0 rad=BeadRadius hertz
+      ball id=10045 x=X70 y=Y70 z=Z1 rad=BeadRadius hertz
+      ball id=10046 x=X71 y=Y71 z=Z1 rad=BeadRadius hertz
+      ball id=10047 x=X72 y=Y72 z=Z1 rad=BeadRadius hertz
+;
+	  ;property
+	  group gr_group range id=(numid,10047)
+	  property shear ShearModulus poiss PoissonRatio friction PPFriction density ParticleDensity
+          fix x y z xspin yspin zspin range id=(numid,10047)
+   end_command
+end
+;
+
+  

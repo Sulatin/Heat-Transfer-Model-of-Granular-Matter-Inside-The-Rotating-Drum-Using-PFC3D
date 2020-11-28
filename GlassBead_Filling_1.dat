@@ -1,0 +1,158 @@
+new
+title 'Rotating drum test of Glass beads Fill=30%, Pattern_1'
+;
+set echo on
+set logfile Logfile_Filling_1
+set log on
+;
+set pinterval 1000    			
+set hist_rep 1000  			
+set plot bmp         			
+;
+trace energy on
+set gravity 0.0 -9.81 0.0
+set safety_fac 0.20       
+;
+define ModelParameter_1
+;Particle property
+       ShearModulus= 1.680e+08
+       PoissonRatio= 0.22
+       ParticleDensity= 2500
+       BeadRadius= 0.0025
+       BeadDiameter= 2*BeadRadius
+;Particle-particle property
+       PPFriction= 0.24
+       PPDampingRatio= 0.0683
+;      PP restitution coe.=0.79
+;Particle-wall property
+       PWFriction= 0.24
+       PWDampingRatio= 0.0966
+;      PW restitution coe.=0.79
+;Drum dimension
+       DrumDiameter= 0.10
+       DrumRadius= DrumDiameter/2.0
+       Depth= 0.01
+       SegmentNumber=64
+       Xmin= -DrumRadius
+       Xmax= DrumRadius
+       Ymin= -DrumRadius
+       Ymax= DrumRadius
+;Snapshot information
+       SnapN1= 0
+       SnapInterval1= 0.01
+end
+@ModelParameter_1
+;
+damp default local 0.0
+damp default viscous normal PPDampingRatio
+damp default viscous shear PPDampingRatio
+define ViscousDamping
+       cp = contact_head
+       loop while cp # null
+	    EntityB= c_ball2(cp)
+	    if pointer_type(EntityB)=101 then
+               c_dampn(cp)=PWDampingRatio
+               c_damps(cp)=PWDampingRatio
+	    end_if
+	    cp = c_next(cp)
+       end_loop
+end
+set fishcall 0 @ViscousDamping
+;Wall generation
+WALL id 1 face (Xmax, Ymax, 0.000) (Xmin, Ymax, 0.000) (Xmin, Ymin, 0.000) (Xmax, Ymin, 0.000)
+WALL id 2 face (Xmax, Ymax, Depth) (Xmax, Ymin, Depth) (Xmin, Ymin, Depth) (Xmin, Ymax, Depth)
+call WallData.dat
+wall property friction PWFriction
+wall property maxfric on
+;Ball generation on wall
+call ParticleGluedWall.dat
+ParticleGluedWall
+;Ball generation inside drum
+call ParticleRandomGeneration.dat
+ParticleGeneration
+; 
+;Check input data
+;
+print balls information
+print balls damping
+print balls property
+print balls position
+print balls velocity
+print walls property
+pause
+;
+define currenttime
+       currenttime=time
+end
+set fishcall 0 @currenttime	
+;
+plot create View_1
+plot set background white
+plot add wall wireframe on
+plot add ball yellow
+plot current 1
+plot show
+;
+plot create View_2
+plot set background white
+plot add wall wireframe on
+plot add ball yellow
+plot current 2
+plot show
+;
+plot create View_3
+plot set background white
+plot add wall wireframe on
+plot add ball yellow
+plot current 3
+plot show
+;
+history id 1 currenttime   
+history id 2 diagnostic mcf   
+history id 3 diagnostic muf   
+history id 4 energy kinetic
+history id 5 energy frictional    
+;
+plot create MCFTimeDiagram
+plot add history 2 vs 1
+plot current 4
+plot show
+;
+plot create MUFTimeDiagram
+plot add history 3 vs 1
+plot current 5
+plot show
+;
+plot create KETimeDiagram 
+plot add history 4 vs 1
+plot current 6
+plot show
+;
+plot create FETimeDiagram 
+plot add history 5 vs 1
+plot current 7
+plot show
+;
+pause
+;
+define Snapshot1
+       SnapTime= SnapN1*SnapInterval1
+       if time > SnapTime then
+          View1= 'View1_'+string(SnapN1)+'.bmp'
+          View2= 'View2_'+string(SnapN1)+'.bmp'
+          View3= 'View3_'+string(SnapN1)+'.bmp'
+          command
+             plot hardcopy 1 file View1
+             plot hardcopy 2 file View2
+             plot hardcopy 3 file View3
+          end_command
+          SnapN1= SnapN1+1
+       end_if
+end
+set fishcall 0 @Snapshot1
+;
+cycle 50000
+history write 1 2 3 4 5 file Results_Filling_Time_MCF_MUF_KE_FE_1.HIS
+save OutputFiles\GlassBead_Filling_1.sav
+; 
+return

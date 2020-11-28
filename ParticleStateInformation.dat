@@ -1,0 +1,27 @@
+define ParticleStateInformation
+;
+       PDataFile= 'ParticleData_'+string(SnapN3)+'.fio'
+       status=open(PDataFile,1,1)
+       PData(1) = ( 'ParticleNo.' + '\t' + 'ParticleID' + '\t' + 'ParticleX' + '\t' + 'ParticleY' + '\t' + 'ParticleZ' + '\t' + 'ParticleRX' + '\t' + 'ParticleRY' + '\t' + 'ParticleRZ'+ '\t' + 'ParticleTEMP')
+       status=write(PData,1)
+;
+       i=0     
+       bp=ball_head
+       loop while bp # null
+            i=i+1
+            ParticleID=b_id(bp)
+            ParticleX=b_x(bp)
+            ParticleY=b_y(bp)
+            ParticleZ=b_z(bp)
+            ParticleRX=b_rxvel(bp)
+            ParticleRY=b_ryvel(bp)
+            ParticleRZ=b_rzvel(bp)
+            ParticleTEMP=b_thtemp(bp)
+            PData(1)=(string(i) + '\t' + string(ParticleID) + '\t' + string(ParticleX)+ '\t' + string(ParticleY) + '\t' + string(ParticleZ) + '\t' + string(ParticleRX)+ '\t' + string(ParticleRY) + '\t' + string(ParticleRZ)+ '\t' + string(ParticleTEMP))             		           
+            status=write(PData,1)            
+            bp=b_next(bp)
+       end_loop
+       status=close
+;
+end
+       

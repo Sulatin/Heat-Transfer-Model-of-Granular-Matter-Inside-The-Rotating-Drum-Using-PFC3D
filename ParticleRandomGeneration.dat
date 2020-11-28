@@ -1,0 +1,40 @@
+define ParticleGeneration
+;Wall property
+       FilterRadius= DrumRadius*cos(pi/SegmentNumber)
+;Particle number
+       BeadNumber=196
+;
+       command
+	  generate x=(Xmin , Xmax) y=(Ymin , Ymax) z=(0.0 , Depth) rad=(BeadRadius,BeadRadius) &
+          filter = ff_GenBeadsInsideCylinder id = (1,BeadNumber) tries = 1000000 hertz      
+          property shear ShearModulus poiss PoissonRatio friction PPFriction density ParticleDensity &
+          xv 0.0 yv 0.0 zv 0.0 xs 0.0 ys 0.0 zs 0.0
+       end_command
+;
+end 	
+;
+define ff_GenBeadsInsideCylinder
+       _brad = fc_arg(0)
+       _bx = fc_arg(1)
+       _by = fc_arg(2)
+       _bz = fc_arg(3)
+       _skip = 0
+       PolarRadius = sqrt(_bx^2 + _by^2)+_brad
+       if PolarRadius > FilterRadius then
+      	  _skip = 1
+       end_if       		 
+       ff_GenBeadsInsideCylinder = _skip	
+end
+;
+define CountParticles
+       ParticleNumber= 0
+       bp=ball_head
+       loop while bp # null
+            ParticleNumber=ParticleNumber + 1
+            bp=b_next(bp)
+       end_loop
+       jj = out('The number of particles = ' + '\t' + string(ParticleNumber))	
+end
+
+
+

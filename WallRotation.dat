@@ -1,0 +1,25 @@
+define WallRotation
+;
+       wp=wall_head
+       loop while wp # null
+            w_rzvel(wp)=RPM
+            wp=w_next(wp)
+       end_loop
+;
+       bp = ball_head
+       loop while bp # null
+            if b_id(bp) >= SNumber then
+               QQ=atan2(b_y(bp), b_x(bp))
+               b_xvel(bp)=  -RotatingVel*sin(QQ)
+               b_yvel(bp)=  RotatingVel*cos(QQ)
+               b_zvel(bp)= 0.0
+               b_rxvel(bp)= 0.0
+               b_ryvel(bp)= 0.0
+               b_rzvel(bp)= 0.0
+            end_if	
+            bp = b_next(bp)
+       end_loop
+;
+end
+       
+       
